@@ -1,0 +1,11 @@
+framework:
+    default_locale: en
+    enabled_locales: [en, fr]
+    secret: '%env(APP_SECRET)%'
+    csrf_protection: true
+    session:
+        handler_id: session.handler.native_file
+        save_path: '%env(SESSIONS_DIR)%'
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks: [en]

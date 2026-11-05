@@ -1,0 +1,4 @@
+.castor.stub.php
+/.castor/vendor/
+/build/
+/public/*/build/

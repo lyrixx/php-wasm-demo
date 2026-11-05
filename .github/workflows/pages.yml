@@ -1,0 +1,79 @@
+name: Pages
+
+# Builds the demos, and deploys public/ to GitHub Pages. Nothing is deployed if
+# a demo does not answer: app:smoke checks them.
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+    workflow_dispatch:
+
+# On main, the runs wait for each other: an older one could deploy last
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+    contents: read
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Install castor
+              uses: castor-php/setup-castor@v1
+
+            # The checks run on node, with fetch-files.mjs: the version it is
+            # made for
+            - name: Install node
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # The GitHub Actions cache of buildx needs the docker-container
+            # driver, and the runtime token and URLs, that only actions get
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
+
+            - name: Expose GitHub runtime
+              uses: crazy-max/ghaction-github-runtime@v4
+
+            # One scope: the stacks only differ by what they embed, what takes
+            # time to compile is the same
+            - name: Build
+              run: |
+                  castor app:build \
+                      --set '*.cache-from=type=gha' \
+                      --set '*.cache-to=type=gha,mode=max,ignore-error=true'
+
+            - name: Smoke test
+              run: castor app:smoke
+
+            - name: Upload Artifact
+              uses: actions/upload-pages-artifact@v5
+              with:
+                  path: public
+
+    deploy:
+        name: Deploy
+        if: github.event_name != 'pull_request'
+        needs: build
+        runs-on: ubuntu-latest
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v5

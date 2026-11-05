@@ -1,0 +1,220 @@
+/* The panels of the dashboard, and what the lists show */
+.cover {
+    display: block;
+    width: 44px;
+    height: 44px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+
+.initials {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: hsl(var(--hue) 55% 42%);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.rating {
+    color: #e0a526;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.rating-empty {
+    opacity: 0.25;
+}
+
+.demo-accounts {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color, rgb(128 128 128 / 0.25));
+}
+
+.demo-accounts form {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.demo-accounts small {
+    color: var(--text-muted, #6c757d);
+}
+
+.kpis {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    margin-bottom: 1rem;
+}
+
+.kpi,
+.panel {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border-color, rgb(128 128 128 / 0.25));
+    border-radius: 0.5rem;
+    background: var(--form-bg, transparent);
+}
+
+.kpi {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-label,
+.kpi-note {
+    color: var(--text-muted, #6c757d);
+    font-size: 0.8125rem;
+}
+
+.kpi-value {
+    font-size: 1.625rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+}
+
+.kpi-php {
+    border-color: #4f5b93;
+    background: linear-gradient(135deg, rgb(79 91 147 / 0.2), transparent);
+}
+
+.panels {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+}
+
+.panel-wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 48rem) {
+    .panel-wide {
+        grid-column: auto;
+    }
+}
+
+.panel h2 {
+    margin: 0 0 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.panel ul,
+.panel ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.chart {
+    display: flex;
+    gap: 0.375rem;
+    align-items: stretch;
+    height: 13rem;
+}
+
+.chart-column {
+    display: flex;
+    position: relative;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+    padding-bottom: 1.25rem;
+}
+
+.chart-bar {
+    display: block;
+    min-height: 2px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(#7a86c4, #4f5b93);
+}
+
+.chart-column:hover .chart-bar {
+    background: #e0a526;
+}
+
+.chart-label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    color: var(--text-muted, #6c757d);
+    font-size: 0.6875rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.chart-value {
+    display: none;
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.chart-column:hover .chart-value {
+    display: block;
+}
+
+.genres li {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 5.5rem 1fr 3.5rem;
+    align-items: center;
+    padding: 0.2rem 0;
+    font-size: 0.8125rem;
+}
+
+.genre-bar {
+    display: block;
+    height: 0.625rem;
+    border-radius: 2px;
+    justify-self: start;
+}
+
+.genre-value {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.albums li,
+.orders li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.375rem 0;
+    font-size: 0.8125rem;
+}
+
+.albums a {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.albums small {
+    color: var(--text-muted, #6c757d);
+}
+
+.albums-note {
+    color: var(--text-muted, #6c757d);
+    white-space: nowrap;
+}
+
+.orders-customer {
+    flex: 1;
+    overflow: hidden;
+    color: var(--text-muted, #6c757d);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

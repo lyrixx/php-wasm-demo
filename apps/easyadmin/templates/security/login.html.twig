@@ -1,0 +1,21 @@
+{% extends '@EasyAdmin/page/login.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block login_form_footer %}
+    <div class="demo-accounts">
+        {% for username, rights in accounts %}
+            <form method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrf_token_intention) }}">
+                <input type="hidden" name="_target_path" value="{{ target_path }}">
+                <input type="hidden" name="_username" value="{{ username }}">
+                <input type="hidden" name="_password" value="{{ username }}">
+                <button class="btn btn-secondary" type="submit">{{ 'Sign in as %username%'|trans({'%username%': username}) }}</button>
+                <small>{{ rights|trans }}</small>
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}

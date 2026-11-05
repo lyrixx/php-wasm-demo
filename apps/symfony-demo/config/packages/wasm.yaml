@@ -1,0 +1,7 @@
+# What is not in symfony/demo: the sessions stay across the reloads of the page.
+# /symfony-demo is kept in IndexedDB, keep in sync with
+# ../../../../public/symfony-demo/index.html
+framework:
+    session:
+        handler_id: session.handler.native_file
+        save_path: /symfony-demo/sessions

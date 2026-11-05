@@ -1,0 +1,107 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% macro money(cents) %}{{ (cents / 100)|format_currency('EUR', {fraction_digit: 0}) }}{% endmacro %}
+
+{% block content_title %}{{ 'Good day at the shop'|trans }}{% endblock %}
+
+{% block main %}
+    {% from _self import money %}
+    {% set album_crud = 'App\\Controller\\Admin\\AlbumCrudController' %}
+    {% set order_crud = 'App\\Controller\\Admin\\OrderCrudController' %}
+
+    <div class="kpis">
+        <div class="kpi">
+            <span class="kpi-label">{{ 'Revenue, %days% days'|trans({'%days%': recent_days}) }}</span>
+            <strong class="kpi-value">{{ money(revenue_in_cents) }}</strong>
+            <span class="kpi-note">{{ 'vs %revenue% before'|trans({'%revenue%': money(previous_revenue_in_cents)}) }}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">{{ 'Orders, %days% days'|trans({'%days%': recent_days}) }}</span>
+            <strong class="kpi-value">{{ orders_count }}</strong>
+            <span class="kpi-note">{{ 'on the shop'|trans }}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">{{ 'Average basket'|trans }}</span>
+            <strong class="kpi-value">{{ money(average_basket_in_cents) }}</strong>
+            <span class="kpi-note">{{ 'per order'|trans }}</span>
+        </div>
+        <div class="kpi kpi-php">
+            <span class="kpi-label">{{ 'This page was made by'|trans }}</span>
+            <strong class="kpi-value">PHP {{ php_version }}</strong>
+            <span class="kpi-note">{{ 'and Symfony %version%, in your browser'|trans({'%version%': symfony_version}) }}</span>
+        </div>
+    </div>
+
+    <div class="panels">
+        <section class="panel panel-wide">
+            <h2>{{ 'Revenue per week'|trans }}</h2>
+            <div class="chart" role="img" aria-label="{{ 'Revenue per week'|trans }}">
+                {% for week in weeks %}
+                    <div class="chart-column" title="{{ week.week|format_date(pattern: 'd MMM') }}: {{ money(week.revenueInCents) }}">
+                        <span class="chart-value">{{ money(week.revenueInCents) }}</span>
+                        <span class="chart-bar" style="height: {{ (week.revenueInCents / best_week_in_cents * 100)|round(1) }}%"></span>
+                        <span class="chart-label">{{ week.week|format_date(pattern: 'd MMM') }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>{{ 'What sells'|trans }}</h2>
+            {% set best_genre_in_cents = (genres|first).revenueInCents|default(1) %}
+            <ul class="genres">
+                {% for name, genre in genres %}
+                    <li>
+                        <span class="genre-name">{{ name }}</span>
+                        <span class="genre-bar" style="width: {{ (genre.revenueInCents / best_genre_in_cents * 100)|round(1) }}%; background: {{ genre.color }}"></span>
+                        <span class="genre-value">{{ money(genre.revenueInCents) }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="panel">
+            <h2>{{ 'Best sellers'|trans }}</h2>
+            <ol class="albums">
+                {% for best_seller in best_sellers %}
+                    {% set album = best_seller.album %}
+                    <li>
+                        <img class="cover" src="{{ album|cover_art }}" alt="">
+                        <a href="{{ ea_url().setController(album_crud).setAction('detail').setEntityId(album.id) }}">
+                            {{ album.title }}<small>{{ album.artist }}</small>
+                        </a>
+                        <span class="albums-note">{{ '%copies% sold'|trans({'%copies%': best_seller.copies}) }}</span>
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        <section class="panel">
+            <h2>{{ 'Latest orders'|trans }}</h2>
+            <ul class="orders">
+                {% for order in latest_orders %}
+                    <li>
+                        <a href="{{ ea_url().setController(order_crud).setAction('detail').setEntityId(order.id) }}">{{ order.reference }}</a>
+                        <span class="orders-customer">{{ order.customer }}</span>
+                        <twig:ea:Badge color="{{ order.status.badge }}">{{ order.status.label|trans }}</twig:ea:Badge>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="panel">
+            <h2>{{ 'Running low'|trans }}</h2>
+            <ol class="albums">
+                {% for album in low_on_stock %}
+                    <li>
+                        <img class="cover" src="{{ album|cover_art }}" alt="">
+                        <a href="{{ ea_url().setController(album_crud).setAction('detail').setEntityId(album.id) }}">
+                            {{ album.title }}<small>{{ album.artist }}</small>
+                        </a>
+                        <twig:ea:Badge color="{{ 0 == album.stock ? 'danger' : 'warning' }}">{{ album.stock }}</twig:ea:Badge>
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+{% endblock %}

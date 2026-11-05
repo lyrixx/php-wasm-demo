@@ -1,0 +1,27 @@
+security:
+    # Users of a demo, whose passwords the login page shows
+    password_hashers:
+        Symfony\Component\Security\Core\User\InMemoryUser: plaintext
+    providers:
+        staff:
+            memory:
+                users:
+                    admin: { password: admin, roles: [ROLE_ADMIN] }
+                    clerk: { password: clerk, roles: [ROLE_CLERK] }
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_CLERK
+    firewalls:
+        main:
+            lazy: true
+            provider: staff
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: admin
+                enable_csrf: true
+            logout:
+                path: logout
+                target: login
+    access_control:
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_CLERK }

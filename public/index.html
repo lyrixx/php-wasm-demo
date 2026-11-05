@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Symfony applications, in the browser</title>
+    <meta name="description" content="The Symfony Demo and an EasyAdmin back office, running on PHP compiled to WebAssembly: no server, just a page.">
+    <meta property="og:image" content="https://lyrixx.github.io/php-wasm-builder/assets/social-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐘%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            color-scheme: light dark;
+            --accent: light-dark(#4f5b93, #a3acdc);
+            --line: light-dark(#d9dbe4, #363948);
+            --muted: light-dark(#5e6272, #9a9eb0);
+            --surface: light-dark(#f4f5f9, #1c1e26);
+            background: light-dark(#fff, #121318);
+            color: light-dark(#1c1d23, #e2e3ea);
+            font: 1rem/1.5 system-ui, sans-serif;
+        }
+        body {
+            max-width: 46rem;
+            margin: 0 auto;
+            padding: 3rem 1.25rem;
+        }
+        h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.75rem;
+        }
+        a {
+            color: var(--accent);
+            text-underline-offset: 0.15em;
+        }
+        ul {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 0;
+            list-style: none;
+        }
+        li {
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--line);
+            border-radius: 0.5rem;
+            background: var(--surface);
+        }
+        h2 {
+            margin: 0 0 0.25rem;
+            font-size: 1.125rem;
+        }
+        li p {
+            margin: 0;
+        }
+        footer {
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Symfony applications, in the browser</h1>
+    <p>
+        These applications run on PHP, compiled to WebAssembly: in your tab, with
+        their database. No server runs them, what you change stays in your
+        browser. Each one downloads about 25 MB, once.
+    </p>
+    <ul>
+        <li>
+            <h2><a href="symfony-demo/">The Symfony Demo</a></h2>
+            <p>The official demo, as it is: a blog with its admin, Doctrine and SQLite, Stimulus and 30 languages.</p>
+        </li>
+        <li>
+            <h2><a href="easyadmin/">EasyAdmin</a></h2>
+            <p>The back office of a record shop that never existed: a sales dashboard, filters, batch actions, and fixtures loaded in your browser.</p>
+        </li>
+    </ul>
+    <footer>
+        Built with <a href="https://lyrixx.github.io/php-wasm-builder/">PHP WASM Builder</a>
+        (<a href="https://github.com/lyrixx/php-wasm-demo">source</a>).
+    </footer>
+</body>
+</html>

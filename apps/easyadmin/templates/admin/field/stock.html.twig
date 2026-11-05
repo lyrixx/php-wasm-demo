@@ -1,0 +1,2 @@
+{% set album = entity.instance %}
+<twig:ea:Badge color="{{ 0 == album.stock ? 'danger' : (album.lowStock ? 'warning' : 'secondary') }}">{{ album.stock }}</twig:ea:Badge>

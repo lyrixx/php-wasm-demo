@@ -1,0 +1,20 @@
+# What the stack does not embed. Symfony makes its cache in the paths of the
+# WASM filesystem, when the stack is built
+/var/
+# What makes public/assets/, that is embedded
+/assets/styles/
+/assets/vendor/
+/vendor/twbs/
+# The browsers that take WOFF take WOFF2, that the stylesheet lists first
+/public/assets/vendor/lato-font/**/*.woff
+# The application only asks symfony/intl for the names of the locales
+/vendor/symfony/intl/Resources/data/currencies/
+/vendor/symfony/intl/Resources/data/languages/
+/vendor/symfony/intl/Resources/data/regions/
+/vendor/symfony/intl/Resources/data/scripts/
+/vendor/symfony/intl/Resources/data/timezones/
+# What the application never runs
+/vendor/**/Tests/
+/vendor/**/tests/
+/vendor/**/doc/
+/vendor/**/docs/

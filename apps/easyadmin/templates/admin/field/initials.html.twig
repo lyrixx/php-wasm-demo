@@ -1,0 +1,2 @@
+{% set words = entity.instance.name|split(' ') %}
+<span class="initials" style="--hue: {{ entity.instance.id * 47 % 360 }}">{{ words|first|first }}{{ words|last|first }}</span>
