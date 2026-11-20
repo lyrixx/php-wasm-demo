@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c17cc5d88174bac7f98825a4416c72c8",
+    "content-hash": "12d9bb5e091f59cc3ecea04d9fa43eec",
     "packages": [
         {
             "name": "lyrixx/php-wasm-builder",
-            "version": "v0.12.1",
+            "version": "v0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lyrixx/php-wasm-builder.git",
-                "reference": "f072e1d02d53d3cbe54e6571b3f7647b461b488d"
+                "reference": "ec07cf3f4641fdd5a2b4ed6f4a60114b333aa56d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lyrixx/php-wasm-builder/zipball/f072e1d02d53d3cbe54e6571b3f7647b461b488d",
-                "reference": "f072e1d02d53d3cbe54e6571b3f7647b461b488d",
+                "url": "https://api.github.com/repos/lyrixx/php-wasm-builder/zipball/ec07cf3f4641fdd5a2b4ed6f4a60114b333aa56d",
+                "reference": "ec07cf3f4641fdd5a2b4ed6f4a60114b333aa56d",
                 "shasum": ""
             },
             "require": {
@@ -47,9 +47,10 @@
             ],
             "support": {
                 "issues": "https://github.com/lyrixx/php-wasm-builder/issues",
-                "source": "https://github.com/lyrixx/php-wasm-builder/tree/v0.12.1"
+                "source": "https://github.com/lyrixx/php-wasm-builder/tree/v0.14.0"
             },
-            "time": "2026-11-05T17:55:57+00:00"
+            "time": "2026-11-20T12:18:48+00:00",
+            "published-time": "2026-11-20T12:18:53+00:00"
         }
     ],
     "packages-dev": [],
@@ -60,5 +61,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }

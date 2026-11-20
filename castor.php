@@ -120,7 +120,7 @@ function wasm_stacks(): array
     // language of the page.
     $symfony = Stack::named('symfony')
         // Keep in sync with config.platform.php in apps/easyadmin/composer.json
-        ->php('8.5.12')
+        ->php('8.6.0')
         ->extensions('ctype', 'dom', 'filter', 'iconv', 'intl', 'mbstring', 'pdo_sqlite', 'session', 'simplexml', 'tokenizer', 'xml')
         // Symfony makes its cache when the stack is built, with the paths of
         // the WASM filesystem, and opcache compiles the files as they run
