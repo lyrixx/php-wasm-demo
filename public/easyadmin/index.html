@@ -9,7 +9,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐘%3C/text%3E%3C/svg%3E">
     <style>
-        /* Keep in sync with ../symfony-demo/index.html */
+        /* Keep in sync with ../pop-quiz/index.html and ../symfony-demo/index.html */
         :root {
             color-scheme: light dark;
             --accent: light-dark(#4f5b93, #a3acdc);
@@ -141,16 +141,23 @@
                 }
             };
 
+            // The mapping of the entities of the build, the schema of the
+            // database: the mark of a database that has it. It comes last: a
+            // tab closed in the middle starts again on the next visit.
+            const schema = "md5(implode(array_map('file_get_contents', glob('/app/src/Entity/*.php'))))";
+
             // In the browser, not when the stack is built: the dates of the
-            // sales are the ones of the visitor. The mark comes last: a tab
-            // closed in the middle starts again on the next visit.
+            // sales are the ones of the visitor. A new database: without
+            // migrations, nothing says how the rows of another schema update.
             const seed = async () => {
+                await php.runCode(`$database = '/easyadmin/shop.sqlite'; is_file($database) && unlink($database);`);
                 await runConsole('doctrine:schema:update', '--force');
                 await runConsole('doctrine:fixtures:load');
-                await php.runCode(`touch('/easyadmin/seeded');`);
+                await php.runCode(`file_put_contents('/easyadmin/schema', ${schema});`);
             };
 
-            const { stdout } = await php.runCode(`echo (int) is_file('/easyadmin/seeded');`);
+            // A build with another schema starts again from the fixtures
+            const { stdout } = await php.runCode(`echo (int) (${schema} === @file_get_contents('/easyadmin/schema'));`);
             if ('0' === stdout) {
                 message.textContent = 'Loading the fixtures…';
                 await seed();

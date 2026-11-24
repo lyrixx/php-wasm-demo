@@ -46,13 +46,22 @@ jobs:
             - name: Expose GitHub runtime
               uses: crazy-max/ghaction-github-runtime@v4
 
-            # One scope: the stacks only differ by what they embed, what takes
-            # time to compile is the same
+            # A scope per PHP: the cache of a scope is what its last build
+            # exported, another PHP would push this one out. The Symfony stacks
+            # share the default one: they only differ by what they embed, what
+            # takes time to compile is the same. Not "*.": bake adds the cache
+            # of a target to it. A target that castor.php does not have fails
+            # the build, one it adds has no cache.
+            # Keep in sync with wasm_stacks() in castor.php
             - name: Build
               run: |
                   castor app:build \
-                      --set '*.cache-from=type=gha' \
-                      --set '*.cache-to=type=gha,mode=max,ignore-error=true'
+                      --set 'easyadmin.cache-from=type=gha' \
+                      --set 'easyadmin.cache-to=type=gha,mode=max,ignore-error=true' \
+                      --set 'pop-quiz.cache-from=type=gha,scope=pop-quiz' \
+                      --set 'pop-quiz.cache-to=type=gha,scope=pop-quiz,mode=max,ignore-error=true' \
+                      --set 'symfony-demo.cache-from=type=gha' \
+                      --set 'symfony-demo.cache-to=type=gha,mode=max,ignore-error=true'
 
             - name: Smoke test
               run: castor app:smoke

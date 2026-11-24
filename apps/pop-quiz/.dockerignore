@@ -1,0 +1,20 @@
+# What the stack does not embed. Laravel caches its configuration, its routes,
+# its events and its views in the paths of the WASM filesystem, when the stack
+# is built: not the ones of a run on this computer
+/bootstrap/cache/config.php
+/bootstrap/cache/events.php
+/bootstrap/cache/routes-v7.php
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*.php
+/storage/logs/*
+# The page that details an error: Laravel only loads it with APP_DEBUG
+/vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/
+# The dates only speak English
+/vendor/nesbot/carbon/src/Carbon/Lang/*
+!/vendor/nesbot/carbon/src/Carbon/Lang/en.php
+# What the application never runs
+/vendor/**/Tests/
+/vendor/**/tests/
+/vendor/**/doc/
+/vendor/**/docs/

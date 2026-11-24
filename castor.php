@@ -106,18 +106,19 @@ function build_if_missing(): void
 }
 
 /**
- * PHP, compiled to WASM by lyrixx/php-wasm-builder, with a demo in it.
+ * PHP, compiled to WASM by lyrixx/php-wasm-builder, with a demo in it. Keep in
+ * sync with the cache of each stack, in .github/workflows/pages.yml.
  *
  * @return list<Stack>
  */
 function wasm_stacks(): array
 {
-    // What both demos need, so PHP is only compiled once: ctype, dom, iconv,
-    // mbstring and xml, that their dependencies require, filter, that Symfony
-    // calls everywhere, simplexml, that reads the translations, tokenizer,
-    // without which the routes of the controllers are not found, pdo_sqlite,
-    // session, and intl with its data: the dates and the prices, in the
-    // language of the page.
+    // What both Symfony demos need, so PHP is only compiled once for them:
+    // ctype, dom, iconv, mbstring and xml, that their dependencies require,
+    // filter, that Symfony calls everywhere, simplexml, that reads the
+    // translations, tokenizer, without which the routes of the controllers are
+    // not found, pdo_sqlite, session, and intl with its data: the dates and the
+    // prices, in the language of the page.
     $symfony = Stack::named('symfony')
         // Keep in sync with config.platform.php in apps/easyadmin/composer.json
         ->php('8.6.0')
@@ -133,6 +134,23 @@ function wasm_stacks(): array
     return [
         // Without what the .dockerignore of each application leaves out
         $symfony->renamed('easyadmin')->embed('apps/easyadmin', at: '/app')->outputDir('public/easyadmin/build'),
+        // Its own PHP, without intl, that the quiz does without: the polyfills
+        // of symfony/string and symfony/mime take its place, and the 128 MB of
+        // memory by default are enough, without the data of ICU. What Laravel
+        // and its dependencies require: dom, that Termwind writes the output of
+        // artisan with, fileinfo, for Flysystem, openssl, that encrypts the
+        // cookies, and pdo_sqlite.
+        Stack::named('pop-quiz')
+            // Keep in sync with config.platform.php in apps/pop-quiz/composer.json
+            ->php('8.6.0')
+            ->extensions('ctype', 'dom', 'fileinfo', 'filter', 'mbstring', 'openssl', 'pdo_sqlite', 'session', 'tokenizer')
+            ->embed('apps/pop-quiz', at: '/app')
+            // Laravel caches its configuration, its routes, its events and its
+            // views in the paths of the WASM filesystem
+            ->warmup('artisan', 'optimize')
+            ->opcache(Opcache::Runtime)
+            ->targets(Target::Web)
+            ->outputDir('public/pop-quiz/build'),
         $symfony->renamed('symfony-demo')->embed('apps/symfony-demo', at: '/app')->outputDir('public/symfony-demo/build'),
     ];
 }

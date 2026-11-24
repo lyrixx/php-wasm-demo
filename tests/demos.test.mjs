@@ -39,8 +39,8 @@ function browser(php, { keepCookies, withCookies }) {
     };
 }
 
-function csrfToken(html) {
-    const input = /<input[^>]*name="_csrf_token"[^>]*>/.exec(html)?.[0] ?? '';
+function csrfToken(html, name = '_csrf_token') {
+    const input = new RegExp(`<input[^>]*name="${name}"[^>]*>`).exec(html)?.[0] ?? '';
     const token = /value="([^"]*)"/.exec(input)?.[1];
     assert.notEqual(token, undefined, 'The form has no CSRF token.');
 
@@ -115,4 +115,69 @@ test('EasyAdmin answers', async () => {
 
     const { body } = await page.get('/admin/fr');
     assert.match(body, /Tableau de bord/);
+});
+
+test('Pop Quiz answers', async () => {
+    const build = await import('../public/pop-quiz/build/php-web.mjs');
+    const php = await build.default();
+    php.FS.mkdirTree('/pop-quiz');
+    // What public/pop-quiz/index.html does on the first visit
+    await php.runCode(`touch('/pop-quiz/database.sqlite');`);
+    const { exitCode, stdout } = await php.runFile('/app/artisan', { args: ['migrate', '--seed', '--force', '--no-interaction'] });
+    assert.equal(exitCode, 0, stdout);
+    const page = browser(php, build);
+    const path = (location) => new URL(location).pathname.slice('/app'.length);
+
+    await assertPages(page, ['/', '/join', '/quizzes/emoji-cinema', '/quizzes/elephant-facts']);
+    // The links of the home: its URL without the slash, that PHP redirects
+    assert.match((await page.get('/')).body, new RegExp(`href="${origin}/app"`));
+    assert.equal((await page.get('')).location, '/app/');
+
+    const join = await page.get('/join');
+    const joined = await page.post('/join', { _token: csrfToken(join.body, '_token'), avatar: '🦄', nickname: 'Smoke' });
+    assert.equal(joined.location, `${origin}/app`);
+    assert.equal((await page.get('/join')).location, `${origin}/app`, 'A player joins again.');
+
+    const missing = await page.get('/quizzes/nope');
+    assert.equal(missing.status, 404);
+    assert.match(missing.body, /Poof!/);
+
+    // A whole quiz: the first choice of each question, whatever it is
+    const quiz = await page.get('/quizzes/emoji-cinema');
+    const started = await page.post('/quizzes/emoji-cinema/attempts', { _token: csrfToken(quiz.body, '_token') });
+    assert.match(started.location ?? '', /\/app\/attempts\/\d+$/);
+    const attempt = path(started.location);
+    for (let i = 1; i <= 8; i++) {
+        const question = await page.get(attempt);
+        assert.match(question.body, new RegExp(`Question ${i}/8`));
+        const choice = /name="choice" value="(\d+)"/.exec(question.body)?.[1];
+        const answered = await page.post(`${attempt}/answers`, { _token: csrfToken(question.body, '_token'), choice });
+        assert.match(answered.location ?? '', /\/answers\/\d+$/, `The answer to question ${i} is refused.`);
+        await assertPages(page, [path(answered.location)]);
+    }
+    const result = await page.get(attempt);
+    assert.match(result.body, /on the leaderboard/);
+    const token = csrfToken(result.body, '_token');
+    const late = await page.post(`${attempt}/answers`, { _token: token, choice: '1' });
+    assert.equal(late.status, 403, 'A finished attempt takes an answer.');
+    assert.match(late.body, /Nope!/);
+    assert.equal((await page.post('/quizzes/emoji-cinema', { _method: 'DELETE', _token: token })).status, 403, 'A quiz of the house is deleted.');
+
+    // A quiz of their own
+    const form = await page.get('/quizzes/create');
+    const fields = { _token: csrfToken(form.body, '_token'), color: 'cyan', emoji: '💨', title: 'Smoke test' };
+    for (let question = 0; question < 3; question++) {
+        fields[`questions[${question}][prompt]`] = `Question ${question}?`;
+        fields[`questions[${question}][correct]`] = '0';
+        for (let choice = 0; choice < 4; choice++) {
+            fields[`questions[${question}][choices][${choice}]`] = `Choice ${choice}`;
+        }
+    }
+    const created = await page.post('/quizzes', fields);
+    assert.equal(created.location, `${origin}/app/quizzes/smoke-test`);
+    await assertPages(page, ['/quizzes/smoke-test']);
+
+    const deleted = await page.post('/quizzes/smoke-test', { _method: 'DELETE', _token: token });
+    assert.equal(deleted.location, `${origin}/app`);
+    assert.equal((await page.get('/quizzes/smoke-test')).status, 404);
 });
